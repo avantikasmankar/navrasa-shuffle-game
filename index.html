@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navrasa Card Shuffle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #f9fafb;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1024px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .title {
+            font-size: 3rem;
+            font-weight: 300;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: #6b7280;
+        }
+        
+        .button-container {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .shuffle-btn {
+            padding: 0.75rem 2rem;
+            background-color: #111827;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .shuffle-btn:hover {
+            background-color: #1f2937;
+        }
+        
+        .shuffle-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .shuffle-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .cards-container {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .card {
+            background: white;
+            border: 2px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            width: 12rem;
+            height: 16rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .card.placeholder {
+            opacity: 0.3;
+        }
+        
+        .card:not(.placeholder) {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sanskrit {
+            font-size: 1.25rem;
+            font-weight: 500;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+        
+        .english {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        
+        .placeholder-text {
+            font-size: 1.125rem;
+            color: #9ca3af;
+        }
+        
+        .result {
+            text-align: center;
+            margin-top: 2rem;
+            color: #6b7280;
+        }
+        
+        @media (max-width: 768px) {
+            .cards-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Navrasa</h1>
+            <p class="subtitle">Draw three emotions from the nine classical rasas</p>
+        </div>
+
+        <div class="button-container">
+            <button class="shuffle-btn" onclick="shuffleCards()" id="shuffleBtn">
+                Shuffle Cards
+            </button>
+        </div>
+
+        <div class="cards-container" id="cardsContainer">
+            <div class="card placeholder">
+                <div class="placeholder-text">?</div>
+            </div>
+            <div class="card placeholder">
+                <div class="placeholder-text">?</div>
+            </div>
+            <div class="card placeholder">
+                <div class="placeholder-text">?</div>
+            </div>
+        </div>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        const navrasa = [
+            { sanskrit: 'Shringara', english: 'Love' },
+            { sanskrit: 'Hasya', english: 'Laughter' },
+            { sanskrit: 'Karuna', english: 'Compassion' },
+            { sanskrit: 'Raudra', english: 'Anger' },
+            { sanskrit: 'Veera', english: 'Heroism' },
+            { sanskrit: 'Bhayanaka', english: 'Fear' },
+            { sanskrit: 'Bibhatsa', english: 'Disgust' },
+            { sanskrit: 'Adbhuta', english: 'Wonder' },
+            { sanskrit: 'Shanta', english: 'Peace' }
+        ];
+
+        let isShuffling = false;
+
+        function shuffleCards() {
+            if (isShuffling) return;
+            
+            isShuffling = true;
+            const btn = document.getElementById('shuffleBtn');
+            const container = document.getElementById('cardsContainer');
+            const result = document.getElementById('result');
+            
+            btn.textContent = 'Shuffling...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                // Shuffle array and pick 3
+                const shuffled = [...navrasa].sort(() => Math.random() - 0.5);
+                const drawn = shuffled.slice(0, 3);
+                
+                // Clear container
+                container.innerHTML = '';
+                
+                // Add drawn cards
+                drawn.forEach(card => {
+                    const cardElement = document.createElement('div');
+                    cardElement.className = 'card';
+                    cardElement.innerHTML = `
+                        <div class="sanskrit">${card.sanskrit}</div>
+                        <div class="english">${card.english}</div>
+                    `;
+                    container.appendChild(cardElement);
+                });
+                
+                // Show result
+                result.textContent = `Your emotional trilogy: ${drawn.map(card => card.english).join(' • ')}`;
+                
+                // Reset button
+                btn.textContent = 'Shuffle Cards';
+                btn.disabled = false;
+                isShuffling = false;
+            }, 800);
+        }
+    </script>
+</body>
+</html>
